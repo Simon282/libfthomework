@@ -1,4 +1,6 @@
-#include "libft.h"
+
+#include <stdio.h>
+#include <string.h>
 
 int	ft_atoi(const char *str)
 {
@@ -23,4 +25,20 @@ int	ft_atoi(const char *str)
 	while (*(str + i) && *(str + i) >= '0' && *(str + i) <= '9')
 		num = num * 10 + (*(str + i++) - '0');
 	return (num * sign);
+}
+
+int main(void)
+{
+	int val;
+	char	str[20];
+
+	strcpy(str, "	");
+	val = ft_atoi(str);
+	printf("string value = %s, Int value = %d\n", str, val);
+
+	strcpy(str, "test");
+	val = ft_atoi(str);
+	printf("string value = %s, Int value = %d\n", str, val);
+
+	return (0);
 }
