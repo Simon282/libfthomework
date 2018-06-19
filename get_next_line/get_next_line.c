@@ -1,53 +1,62 @@
-int	ft_new_line(char **s, char **line, int fd, int ret)
-{
-	char	*temp;
-	int	len;
+#include "get_next_line.h"
+#include "libft.h"
+#include <stdio.h>
 
-	len = 0;
-	while (s[fd][len] != '\n' && s[fd][len] != '\0')
-		len++;
-	if (s[fd][len] == '\n')
+static char	*buffer_size(int const fd, char *buff, int *ret)
+{
+	char	temp[BUFF_SIZE + 1];
+	char	*temp2;
+
+	*ret = read(fd, temp, BUFF_SIZE);
+	if (*ret >= BUFF_SIZE && temp[*ret - 1] == '\n')
+		temp[*ret] = '\0';
+	else
 	{
-		*line = ft_strsub(s[fd], 0, len);
-		temp = ft_strdup(s[fd] + len + 1);
-		free(s[fd]);
-		s[fd] = temp;
-		if (s[fd][0] == '\0')
-			ft_strdel(&s[fd]);
+		temp[*ret] = '\n';
+		temp[*ret + 1] = '\0';
 	}
-	else if (s[fd][len] == '\0')
-	{
-		if (ret == BUFF_SIZE)
-			return (get_next_line(fd, line));
-		*line = ft_strdup(s[fd]);
-		ft_strdel(&s[fd]);
-	}
-	return (1);
+	temp2 = buff;
+	buff = ft_strjoin(buff, temp);
+	ft_strdel(&temp2);
+	return (buff);
 }
 
-int	get_next_line(const int fd, char **line)
+int	get_next_line(int const fd, char **line)
 {
-	static char	*s[255];
-	char		buf[BUFF_SIZE + 1];
-	char		*temp;
+	static char	*buff = NULL;
 	int		ret;
+	char		*str;
 
-	if (fd < 0 || line == NULL)
+	if (!line || fd < 0)
 		return (-1);
-	while ((ret = read(fd, buf, BUFF_SIZE)) > 0)
+	ret = 1;
+	if (!buf)
+		buf = ft_strnew(0);
+	while (ret > 0)
 	{
-		buf[ret] = '\0';
-		if (s[fd] == NULL)
-			s[fd] = ft_strnew(1);
-		temp = ft_strjoin(s[fd], buf);
-		free(s[fd]);
-		s[fd] = temp;
-		if (ft_strchr(buf, '\n'))
-			break;
+		if ((str = ft_strchr(buff, '\n')) != NULL)
+		{
+			*str = 0;
+			*line = ft_strdup(buff);
+			ft_memmove(buff, str + 1, ft_strlen(str + 1));
+			return (1);
+		}
+		buff = buff_size(fd, buff, &ret);
 	}
-	if (ret < 0)
-		return (-1);
-	else if ( ret == 0 && (s[fd] == NULL || s[fd][0] == '\0'))
-		return (0);
-	return (ft_new_line(s, line, fd, ret));
+	if (ret == 0)
+		*line = ft_strnew(0);
+	return (ret);
 }
+
+//int main()
+//{
+//	int		ret = 1;
+//	char	*line;
+//
+//	while (ret > 0)
+//	{
+//		ret = get_next_line(0, &line);
+//		printf("line = %s\n", line);
+//		free(line);
+//	}
+//}
