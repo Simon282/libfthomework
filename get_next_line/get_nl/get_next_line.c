@@ -2,18 +2,18 @@
 #include "libft.h"
 #include <stdio.h>
 
-static char	*buffer_size(int const fd, char *buff, int *ret)
+static char	*buffer_size(int const fd, char *buff, int *result)
 {
 	char	temp[BUFF_SIZE + 1];
 	char	*temp2;
 
-	*ret = read(fd, temp, BUFF_SIZE);
-	if (*ret >= BUFF_SIZE && temp[*ret - 1] == '\n')
-		temp[*ret] = '\0';
+	*result = read(fd, temp, BUFF_SIZE);
+	if (*result >= BUFF_SIZE && temp[*result - 1] == '\n')
+		temp[*result] = '\0';
 	else
 	{
-		temp[*ret] = '\n';
-		temp[*ret + 1] = '\0';
+		temp[*result] = '\n';
+		temp[*result + 1] = '\0';
 	}
 	temp2 = buff;
 	buff = ft_strjoin(buff, temp);
@@ -41,7 +41,7 @@ int	get_next_line(int const fd, char **line)
 			ft_memmove(buff, str + 1, ft_strlen(str + 1));
 			return (1);
 		}
-		buff = buff_size(fd, buff, &ret);
+		buff = buffer_size(fd, buff, &ret);
 	}
 	if (ret == 0)
 		*line = ft_strnew(0);
